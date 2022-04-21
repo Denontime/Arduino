@@ -1,0 +1,58 @@
+const toggleTable = function (event) {
+  event.target.classList.toggle('icms-tree-table-trigger-expanded');
+  const parentTr = event.target.parentNode.parentNode;
+  const parentLevelClass = getLevelClass(parentTr);
+  const overlapTr = parentTr.parentNode.querySelectorAll(`[class*="${parentLevelClass}-"]`);
+  if (!event.target.classList.contains('icms-tree-table-trigger-expanded')) {
+    overlapTr.forEach(item => {
+      item.querySelectorAll('.icms-tree-table-trigger.icms-tree-table-trigger-expanded').forEach(td => {
+        td.classList.remove('icms-tree-table-trigger-expanded');
+      });
+      item.classList.add('icms-tree-table-row-hidden');
+      item.style.visibility = 'collapse';
+    });
+  } else {
+    overlapTr.forEach(item => {
+      const levelClass = getLevelClass(item);
+      if (levelClass && levelClass.replace(`${parentLevelClass}-`, '').split('-').length === 1) {
+        item.classList.remove('icms-tree-table-row-hidden');
+        item.style.visibility = '';
+      }
+    });
+  }
+}
+const getLevelClass = function(element) {
+  let levelClass;
+  element.classList.forEach(className => {
+    if (~className.indexOf('row-level')) {
+      levelClass = className;
+    }
+  });
+  return levelClass
+}
+Array.from(document.querySelectorAll('[class*="row-level-"]')).forEach(item => {
+  let targetClass;
+  item.classList.forEach(className => {
+    if (~className.indexOf('row-level-')) {
+      targetClass = className;
+    }
+  });
+  if (targetClass) {
+    const level = targetClass.split('-').length - 3;
+    item.children[0].style.paddingLeft = (10 + level * 20) + 'px';
+    if (level > 0) {
+      item.classList.add('icms-tree-table-row-hidden');
+      item.style.visibility = 'collapse';
+    }
+  }
+});
+window.addEventListener('load', function () {
+  Array.from(document.querySelectorAll('.icms-tree-table-trigger')).forEach(item => {
+    item.addEventListener('click', toggleTable);
+  });
+  setTimeout(() => {
+    Array.from(document.querySelectorAll('.icms-tree-table-trigger')).forEach(item => {
+        item.addEventListener('click', toggleTable);
+      });
+  }, 1000)
+});

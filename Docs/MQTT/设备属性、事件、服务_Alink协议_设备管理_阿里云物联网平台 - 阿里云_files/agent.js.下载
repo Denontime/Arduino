@@ -1,0 +1,52 @@
+!(function (g, key, url) {
+  var doc = g.document;
+  var qoe = g[key] || (g[key] = {});
+  var config = qoe.config = { t: Date.now(), baseUrl: "//etest.aliyun.com", recordingBaseUrl: "//recording.aliyun.com" };
+  var reg, arr;
+  g.__qoe_key__ = key;
+  if (window.location.search) {
+    reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)", "i");
+    arr = window.location.search.substr(1).match(reg);
+  }
+  if (!arr) {
+    reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)");
+    arr = doc.cookie.match(reg);
+  }
+  if (arr && arr[2]) {
+    config.qoeKey = decodeURIComponent(arr[2]);
+  }
+
+  function loadScript() {
+    var readyState = doc.readyState;
+    if (readyState === 'interactive' || readyState === 'complete') {
+      var script = doc.createElement("script");
+      script.src = url + '?_=' + Math.round(Date.now() / 100000);
+      script.setAttribute("crossorigin", "");
+      doc.body.insertBefore(script, doc.body.firstChild);
+    } else {
+      doc.addEventListener("DOMContentLoaded", loadScript);
+    }
+  }
+
+  qoe.launchEtest = function (params) {
+    if (config.inited) {
+      throw 'current page need reload';
+    }
+    if (typeof params !== 'object') {
+      throw 'need params'
+    }
+    if (!("projectId" in params) || !("userName" in params)) {
+      throw 'need params.projectId and params.userName'
+    }
+    if (qoe._launchEtest) {
+      qoe._launchEtest(params);
+    } else {
+      qoe.etest_cache = params;
+      loadScript();
+    }
+  }
+
+  if (config.qoeKey) {
+    loadScript()
+  }
+})(window, '_qoe', '//g.alicdn.com/qoe/recording/index.js');

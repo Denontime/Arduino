@@ -1,0 +1,23 @@
+.icms-tree-table-trigger {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-right: 3px;
+  line-height: 14px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.icms-tree-table-trigger::after {
+  content: '+';
+}
+
+.icms-tree-table-trigger-expanded::after {
+  content: '-'
+}
